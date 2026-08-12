@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="基于 DeepSeek 与本地 DuckDB 的电信智能运维平台" />
+    <title>电信智能运维平台</title>
+    <link rel="stylesheet" href="/styles.css?v=4" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img">
+              <path d="M9 35a21 21 0 0 1 30 0" />
+              <path d="M15 29a13 13 0 0 1 18 0" />
+              <path d="M21 23a5 5 0 0 1 6 0" />
+              <circle cx="24" cy="38" r="3" />
+            </svg>
+          </div>
+          <div>
+            <div class="brand-title">电信智能运维</div>
+            <div class="brand-subtitle">Autonomous Networks</div>
+          </div>
+        </div>
+
+        <div class="nav-label">功能中心</div>
+        <nav id="agent-nav" class="agent-nav" aria-label="Agent 选择"></nav>
+
+        <section class="history-section" aria-labelledby="history-title">
+          <div class="history-header">
+            <div id="history-title" class="nav-label">历史对话</div>
+            <button id="refresh-history" class="history-refresh" type="button" aria-label="刷新历史对话" title="刷新">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" />
+              </svg>
+            </button>
+          </div>
+          <div id="conversation-history" class="conversation-history">
+            <p class="history-empty">正在读取历史对话…</p>
+          </div>
+        </section>
+
+        <div class="sidebar-note">
+          <span class="status-dot"></span>
+          <div>
+            <strong>本地数据模式</strong>
+            <span>DeepSeek · DuckDB</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">当前 Agent</div>
+            <h1 id="current-agent-title">正在加载…</h1>
+            <p id="current-agent-description">正在连接本地服务</p>
+          </div>
+          <button id="new-session" class="secondary-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            新建会话
+          </button>
+        </header>
+
+        <section id="chat" class="chat" aria-live="polite">
+          <div id="welcome" class="welcome-card">
+            <div class="welcome-icon" aria-hidden="true">AI</div>
+            <h2 id="welcome-title">欢迎使用电信智能运维平台</h2>
+            <p id="welcome-description">请选择功能，然后输入你的运维任务。</p>
+            <div id="quick-actions" class="quick-actions"></div>
+          </div>
+        </section>
+
+        <footer class="composer-area">
+          <div id="runtime-status" class="runtime-status">
+            <span class="status-dot"></span>
+            <span>准备就绪</span>
+          </div>
+          <form id="composer" class="composer">
+            <textarea
+              id="message-input"
+              rows="1"
+              maxlength="8000"
+              placeholder="请输入你的问题或运维指令…"
+              aria-label="消息内容"
+            ></textarea>
+            <button id="send-button" class="send-button" type="submit" aria-label="发送消息">
+              <span>发送</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m5 12 14-7-4 14-3-6-7-1Z" />
+              </svg>
+            </button>
+            <button
+              id="stop-button"
+              class="stop-button"
+              type="button"
+              aria-label="停止生成"
+              hidden
+            >
+              <span>停止生成</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="7" y="7" width="10" height="10" rx="1" />
+              </svg>
+            </button>
+          </form>
+          <p class="composer-hint">执行过程是可审计的步骤摘要，不包含模型隐藏推理。AI 结果仅用于演示。</p>
+        </footer>
+      </main>
+    </div>
+
+    <dialog id="rename-dialog" class="modal-dialog">
+      <form id="rename-form" class="modal-card">
+        <div class="modal-heading">
+          <div>
+            <span>历史对话</span>
+            <h2>重命名对话</h2>
+          </div>
+          <button id="rename-close" class="icon-button" type="button" aria-label="关闭重命名窗口">×</button>
+        </div>
+        <label for="conversation-title">对话名称</label>
+        <input id="conversation-title" type="text" maxlength="60" autocomplete="off" required />
+        <div class="modal-actions">
+          <button id="rename-cancel" class="dialog-secondary" type="button">取消</button>
+          <button class="dialog-primary" type="submit">保存名称</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="delete-dialog" class="modal-dialog">
+      <div class="modal-card">
+        <div class="modal-heading">
+          <div>
+            <span>历史对话</span>
+            <h2>删除这条对话？</h2>
+          </div>
+          <button id="delete-close" class="icon-button" type="button" aria-label="关闭删除窗口">×</button>
+        </div>
+        <p id="delete-description" class="delete-description"></p>
+        <p class="delete-warning">删除后无法恢复，但不会删除已经保存的 Incident 或 RCA 报告。</p>
+        <div class="modal-actions">
+          <button id="delete-cancel" class="dialog-secondary" type="button">取消</button>
+          <button id="delete-confirm" class="dialog-danger" type="button">确认删除</button>
+        </div>
+      </div>
+    </dialog>
+
+    <template id="message-template">
+      <article class="message">
+        <div class="message-avatar"></div>
+        <div class="message-body">
+          <div class="message-role"></div>
+          <div class="message-content"></div>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js?v=4" defer></script>
+  </body>
+</html>

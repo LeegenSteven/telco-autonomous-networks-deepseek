@@ -1,0 +1,15 @@
+/**/*.iml
+/.idea/
+/agents/root_cause_analysis/.adk/session.db
+/agents/uv.lock
+/agents/incident_detector/.adk/session.db
+/agents/root_cause_analysis/.env
+/agents/incident_detector/.env
+/agents/.env
+/utils/.env
+/.local/
+
+/**/__pycache__
+/agents/.venv/
+/agents/*.egg-info/
+/out/

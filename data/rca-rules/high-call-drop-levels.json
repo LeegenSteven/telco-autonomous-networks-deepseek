@@ -1,0 +1,14 @@
+{
+  "description": "呼叫掉线水平过高",
+  "kpi_missed": [
+    "retainability"
+  ],
+  "processing_rule": "检查 Cell 的上行链路（UL）RSSI。如果 UL RSSI 不在 -120 至 -114 的正常范围内，继续检查上行链路配置，确认 pZeroNominalPucch 是否接近最佳值 -114、pZeroNominalPusch 是否接近最佳值 -100。如果配置与最佳值的偏差超过 5%，可以建议执行自动调整；未经用户明确确认不得执行。",
+  "processing_rule_tools": ["get_uplink_rssi_level","get_uplink_configuration", "initiate_uplink_configuration_adjustment"],
+  "severity_determination_rule": "如果 Retainability 大于 3.5，将 Incident 评为 HIGH；如果上行链路（UL）RSSI 低于 -120，评为 MEDIUM；如果 UL RSSI 高于 -105，评为 HIGH；其他情况评为 LOW。",
+  "severity_determination_rule_tools": ["get_uplink_rssi_level"],
+  "vendor": "Acme Telco Appliances",
+  "author": "Acme Telco Appliances",
+  "creation_date": "2025-12-26 08:30:00 UTC",
+  "is_current": true
+}

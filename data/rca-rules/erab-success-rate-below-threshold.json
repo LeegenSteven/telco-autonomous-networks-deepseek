@@ -1,0 +1,14 @@
+{
+  "description": "ERAB 成功率低于阈值",
+  "kpi_missed": [
+    "erab_success_rate"
+  ],
+  "processing_rule": "检查发生 KPI 异常的 eNodeB 和 Cell 对应的 Cell Trace 是否显示安全配置失败。如果失败事件中有较高比例与 FAILED_SECURITY_SETUP 有关，应把它列为可能根因，并给出具体数量和比例。建议进一步分析发生安全配置失败的终端，但不得向模型或报告暴露完整 IMSI、MSISDN 或 IMEISV。",
+  "processing_rule_tools": ["get_cell_trace_statistics"],
+  "severity_determination_rule": "如果 ERAB 成功率低于 95%，将 Incident 评为 HIGH；否则评为 LOW。",
+  "severity_determination_rule_tools": [],
+  "vendor": "Acme Telco Appliances",
+  "author": "Jack Smith (smith@example.com), Jane Lee (lee@example.com)",
+  "creation_date": "2025-12-26 08:30:00 UTC",
+  "is_current": true
+}
